@@ -6,7 +6,7 @@ All materials are available under the Creative Commons license "Attribution-Shar
 When borrowing any materials from this repository, you must leave a link to it, and also specify my name: Ashish David.
 
 
-#How to run the program
+# How to run the program
 
 Use any Python IDE.
 
