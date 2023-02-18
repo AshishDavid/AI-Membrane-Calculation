@@ -12,6 +12,6 @@ Use any Python IDE.
 
 After running the program, type the location of the raw data file where it is located. 
 
-For Example: D:\Gas permeation calculation\H2 raw data file.xlsx
+For Example: "D:\Gas permeation calculation\H2 raw data file.xlsx"
 
 And you will see the result.
