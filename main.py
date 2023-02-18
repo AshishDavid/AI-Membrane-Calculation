@@ -1,3 +1,14 @@
+import subprocess
+import sys
+
+
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+
+install("scipy")
+install("openpyxl")
+
 from openpyxl import load_workbook
 import math
 from scipy.optimize import fsolve
@@ -8,7 +19,7 @@ def func(x):
         (1.01 * (18654.3 / x) / ((18654.3 / x) + 2213.2)) / (1.01 * 2213.2 / ((18654.3 / x) + 2213.2)) * 100) - 32 - x
 
 
-file_location = input("Enter the location of raw data")
+file_location = input("Enter the location of raw data\n")
 file_location = file_location.replace("\\", "//")
 workbook = load_workbook(filename=file_location)
 sheet = workbook.active
