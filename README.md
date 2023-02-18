@@ -4,3 +4,13 @@
 
 All materials are available under the Creative Commons license "Attribution-ShareAlike" 4.0.
 When borrowing any materials from this repository, you must leave a link to it, and also specify my name: Ashish David.
+
+
+#How to run the program
+
+Use any Python IDE.
+
+After running the program, type the location of the raw data file where it is located. 
+For Example: D:\Gas permeation calculation\H2 raw data file.xlsx
+
+And you will see the result.
