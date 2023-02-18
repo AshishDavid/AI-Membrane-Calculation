@@ -16,7 +16,7 @@ from scipy.optimize import fsolve
 
 def func(x):
     return 355 * math.log10(
-        (1.01 * (18654.3 / x) / ((18654.3 / x) + 2213.2)) / (1.01 * 2213.2 / ((18654.3 / x) + 2213.2)) * 100) - 32 - x
+        (1.01 * (io / x) / ((io / x) + pmsar)) / (1.01 * pmsar / ((io / x) + pmsar)) * 100) - 32 - x
 
 
 file_location = input("Enter the location of raw data\n")
@@ -66,63 +66,81 @@ print(pmsar)
 print("rs-0: ", end='')
 print(126.9)
 
+real = h2_raw - avg_bg
+print("Real: ", end='')
+print(real)
+
+io = real * 126.9
+print("I-0: ", end='')
+print(io)
+
 print("rs-i: ", end='')
 rsi = fsolve(func, 1)
 print(rsi[0])
 
-real = h2_raw - avg_bg
-print("Real: ", end='')
-print(real)
-io = real * 126.9
-print("I-0: ", end='')
-print(io)
 pmsi = io / rsi[0]
 print("P-MS-I: ", end='')
 print(pmsi)
+
 pmstot = pmsar + pmsi
 print("P-MS-Tot: ", end='')
 print(pmstot)
+
 ppi = 1.01 * pmsi / pmstot
 print("P-p,i: ", end='')
 print(ppi)
+
 ppar = 1.01 * pmsar / pmstot
 print("P-p,Ar,i: ", end='')
 print(ppar)
+
 qpiqar = ppi / ppar * 100
 print("Q-p,i/Q-Ar,i: ", end='')
 print(qpiqar)
+
 qsweep = 50
 print("Q-Sweep(Ar): ", end='')
 print(qsweep, end='')
 print(" mln/min")
+
 qpermeate = qsweep * qpiqar / 100
 print("Q-permeate: ", end='')
 print(qpermeate, end='')
 print(" mln/min")
+
 pfeed = 1.01
 dmembrane = 2.7
 amembrane = 3.141593 / 4 * dmembrane * dmembrane
+
 print("P-feed: ", end='')
 print(pfeed, end='')
 print(" bar")
+
 print("d-membrane: ", end='')
 print(dmembrane, end='')
 print(" cm")
+
 print("A-membrane: ", end='')
 print(amembrane, end='')
 print(" cm^2")
+
 permeancebar = 0.6 * qpermeate / (pfeed - ppi) / amembrane
 print("Permeance in m^3(STP)/(m^2 h bar): ", end='')
 print(permeancebar)
+
 permeancegpu = 370 * permeancebar
 print("Permeance in GPU: ", end='')
 print(permeancegpu)
+
 permeancepa = permeancegpu * 3.35 / 1000
 lmembrane = 0.1
 permeability = permeancegpu * lmembrane
+
 print("Permeance in 10^-7 mol/(m^2 s Pa): ", end='')
 print(permeancepa)
+
 print("L-membrane in μm: ", end='')
 print(lmembrane)
+
 print("Permeability in Barrer: ", end='')
 print(permeability)
