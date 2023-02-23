@@ -1,14 +1,3 @@
-import subprocess
-import sys
-
-
-def install(package):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
-
-install("scipy")
-install("openpyxl")
-
 from openpyxl import load_workbook
 import math
 from scipy.optimize import fsolve
