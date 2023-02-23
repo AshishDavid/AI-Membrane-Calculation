@@ -1,5 +1,6 @@
 from openpyxl import load_workbook
 import math
+import argparse
 from scipy.optimize import fsolve
 
 
@@ -8,9 +9,10 @@ def func(x):
         (1.01 * (io / x) / ((io / x) + pmsar)) / (1.01 * pmsar / ((io / x) + pmsar)) * 100) - 32 - x
 
 
-file_location = input("Enter the location of raw data\n")
-file_location = file_location.replace("\\", "//")
-workbook = load_workbook(filename=file_location)
+parser = argparse.ArgumentParser()
+parser.add_argument('filename', type=argparse.FileType('r'))
+args = parser.parse_args()
+workbook = load_workbook(filename=args.filename.name)
 sheet = workbook.active
 
 sum_bg = 0
