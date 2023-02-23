@@ -7,7 +7,7 @@ When borrowing any materials from this repository, you must leave a link to it, 
 
 
 # How to run the program
-
+Install the dependencies. Use the command "pip install -r requirements.txt" on terminal to install it.
 Use any Python IDE.
 
 After running the program, type the location of the raw data file where it is located. 
