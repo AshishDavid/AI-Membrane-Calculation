@@ -19,7 +19,7 @@ def calc_avg_bg():
             break
         count += 1
     for k in range(count - 30, count + 1):
-        sum_bg_n = sum_bg_n + int(sheet["D" + str(k)].value)
+        sum_bg_n = sum_bg_n + int(sheet[gas_column + str(k)].value)
     avg_bg_n = sum_bg_n / 30
     return avg_bg_n
 
@@ -34,9 +34,19 @@ parser.add_argument('filename', type=argparse.FileType('r'))
 parser.add_argument('fileformat')
 parser.add_argument('rso')
 parser.add_argument('dmembrane')
+parser.add_argument('gas')
 args = parser.parse_args()
 workbook = load_workbook(filename=args.filename.name)
 sheet = workbook.active
+
+if args.gas == 'H2':
+    gas_column = 'D'
+if args.gas == 'He':
+    gas_column = 'C'
+if args.gas == 'CH4':
+    gas_column = 'E'
+if args.gas == 'CO2':
+    gas_column = 'F'
 
 avg_bg = calc_avg_bg()
 print("BG:   ", end='')
@@ -51,10 +61,10 @@ prms = {}
 sum_ = 0
 c = 0
 for j in range(switch_row, sheet.max_row + 1):
-    if sheet["D" + str(j)].value in raw:
-        raw[sheet["D" + str(j)].value] += 1
+    if sheet[gas_column + str(j)].value in raw:
+        raw[sheet[gas_column + str(j)].value] += 1
     else:
-        raw[sheet["D" + str(j)].value] = 1
+        raw[sheet[gas_column + str(j)].value] = 1
     if sheet["G" + str(j)].value in prms:
         prms[sheet["G" + str(j)].value] += 1
     else:
