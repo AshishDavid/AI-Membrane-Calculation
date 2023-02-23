@@ -8,10 +8,10 @@ When borrowing any materials from this repository, you must leave a link to it, 
 
 # How to run the program
 Install the dependencies. Use the command "pip install -r requirements.txt" on terminal to install it.
-Use any Python IDE.
+Use any Python IDE or terminal.
+Use this command to run the program:
+python main.py Location json/csv rs-0 d-membrane H2/CH4/He/CO2/NO2
 
-After running the program, type the location of the raw data file where it is located. 
-
-For Example: "D:\Gas permeation calculation\H2 raw data file.xlsx"
+For Example: "python main.py "D:\Gas permeation calculation\H2 raw data.xlsx" json 126.9 2.7 H2"
 
 And you will see the result.
