@@ -26,8 +26,6 @@ def calc_avg_bg():
 
 def calc_rsi(x):
     diction = {'CH4': [79.21, 233.34], 'N2': [-41.31, 91.58], 'He': [-58.92, 267.25]}
-    if args.gas == 'H2':
-        return 602
     if args.gas == 'CO2':
         return 366.542 * math.exp(0.18068 / (
                 (pfeed * (io / x) / ((io / x) + pmsar)) / (pfeed * pmsar / ((io / x) + pmsar)) * 100 + 0.08308)) - x
@@ -35,6 +33,12 @@ def calc_rsi(x):
         return diction[args.gas][0] * math.log10(
             (pfeed * (io / x) / ((io / x) + pmsar)) / (pfeed * pmsar / ((io / x) + pmsar)) * 100) \
             + diction[args.gas][1] - x
+
+
+def calc_switch_row():
+    for i in range(2, sheet.max_row + 1):
+        if sheet["H" + str(i)].value == "switch time":
+            return i
 
 
 parser = argparse.ArgumentParser()
@@ -58,11 +62,7 @@ if args.gas == 'CO2':
 
 avg_bg = calc_avg_bg()
 
-for i in range(2, sheet.max_row + 1):
-    if sheet["H" + str(i)].value == "switch time":
-        switch_row = i
-        break
-
+switch_row = calc_switch_row()
 raw = {}
 prms = {}
 sum_ = 0
@@ -86,7 +86,7 @@ h2_prms = max(zip(prms.values(), prms.keys()))[1]
 pmsar = sum_ / c
 real = h2_raw - avg_bg
 io = real * float(args.rso)
-rsi = fsolve(calc_rsi, 1000)
+rsi = [602] if args.gas == 'H2'else fsolve(calc_rsi, 1000)
 pmsi = io / rsi[0]
 pmstot = pmsar + pmsi
 ppi = 1.01 * pmsi / pmstot
@@ -147,6 +147,22 @@ data = {"BG": avg_bg, "Raw": h2_raw, "p-ms-ar": pmsar, "rs-0": args.rso, "Real":
             qsweep, "Q-permeate": qpermeate, "P-feed": pfeed, "d-membrane": dmembrane, "A-membrane": args.amembrane,
         "Permeance in bar": permeancebar, "Permeance in GPU": permeancegpu, "Permeance in Pa": permeancepa,
         "L-membrane": lmembrane, "Permeability in Barrer": permeability}
+
+gas_list = [sheet[gas_column + str(i)].value for i in range(switch_row - 1, sheet.max_row + 1)]
+processed_signal = [(gas_list[i] - avg_bg * float(args.rso)) / rsi[0] for i in range(len(gas_list))]
+argon_list = [sheet["G" + str(i)].value for i in range(switch_row - 1, sheet.max_row + 1)]
+sum_argon_processed = [processed_signal[i] + argon_list[i] for i in range(len(processed_signal))]
+gas_in_bar = [1.01 * processed_signal[i] / sum_argon_processed[i] for i in range(len(processed_signal))]
+argon_in_bar = [1.01 * argon_list[i] / sum_argon_processed[i] for i in range(len(processed_signal))]
+gas_mln_min = [qsweep * gas_in_bar[i] / argon_in_bar[i] for i in range(len(gas_in_bar))]
+gas_cum_vol = [0]
+for i in range(1, len(gas_list)):
+    gas_cum_vol.append(0.5 * (gas_mln_min[i] + gas_mln_min[i - 1]))
+gas_cum_vol_mln = [0]
+sum_gas_cum_vol = 0
+for i in range(1, len(gas_list)):
+    sum_gas_cum_vol = sum_gas_cum_vol + gas_cum_vol[i]
+    gas_cum_vol_mln.append(1 / 60 * sum_gas_cum_vol)
 
 if args.fileformat == "json":
     with open("output_in_json.json", "w") as outfile:
