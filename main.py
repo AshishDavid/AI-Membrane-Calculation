@@ -25,20 +25,17 @@ def calc_avg_bg():
 
 
 def calc_rsi(x):
-    if args.gas == 'CH4':
-        return 79.21 * math.log10(
-            (pfeed * (io / x) / ((io / x) + pmsar)) / (pfeed * pmsar / ((io / x) + pmsar)) * 100) + 233.34 - x
+    diction = {'CH4': [79.21, 233.34], 'N2': [-41.31, 91.58], 'He': [-58.92, 267.25]}
     if args.gas == 'H2':
         return 602
-    if args.gas == 'N2':
-        return -41.31 * math.log10(
-            (pfeed * (io / x) / ((io / x) + pmsar)) / (pfeed * pmsar / ((io / x) + pmsar)) * 100) + 91.58 - x
-    if args.gas == 'He':
-        return -58.92 * math.log10(
-            (pfeed * (io / x) / ((io / x) + pmsar)) / (pfeed * pmsar / ((io / x) + pmsar)) * 100) + 267.25 - x
     if args.gas == 'CO2':
         return 366.542 * math.exp(0.18068 / (
                 (pfeed * (io / x) / ((io / x) + pmsar)) / (pfeed * pmsar / ((io / x) + pmsar)) * 100 + 0.08308)) - x
+    else:
+        return diction[args.gas][0] * math.log10(
+            (pfeed * (io / x) / ((io / x) + pmsar)) / (pfeed * pmsar / ((io / x) + pmsar)) * 100) \
+            + diction[args.gas][1] - x
+
 
 
 parser = argparse.ArgumentParser()
@@ -165,4 +162,3 @@ elif args.fileformat == "csv":
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows([data])
-
