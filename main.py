@@ -9,6 +9,7 @@ import csv
 pfeed = 1.01
 qsweep = 50
 lmembrane = 0.1
+dmembrane = 2.7
 
 
 def calc_avg_bg():
@@ -43,9 +44,9 @@ def calc_rsi(x):
 parser = argparse.ArgumentParser()
 parser.add_argument('filename', type=argparse.FileType('r'))
 parser.add_argument('fileformat')
-parser.add_argument('rso')
-parser.add_argument('dmembrane')
-parser.add_argument('gas')
+parser.add_argument('--rso', help='Value of RS-0')
+parser.add_argument('--amembrane', help='Value of amembrane')
+parser.add_argument('--gas', help='Which gas is used')
 args = parser.parse_args()
 workbook = load_workbook(filename=args.filename.name)
 sheet = workbook.active
@@ -96,89 +97,61 @@ ppi = 1.01 * pmsi / pmstot
 ppar = 1.01 * pmsar / pmstot
 qpiqar = ppi / ppar * 100
 qpermeate = qsweep * qpiqar / 100
-amembrane = math.pi / 4 * float(args.dmembrane) * float(args.dmembrane)
-permeancebar = 0.6 * qpermeate / (pfeed - ppi) / amembrane
+permeancebar = 0.6 * qpermeate / (pfeed - ppi) / float(args.amembrane)
 permeancegpu = 370 * permeancebar
 permeancepa = permeancegpu * 3.35 / 1000
 permeability = permeancegpu * lmembrane
 
-print("BG:   ", end='')
-print(avg_bg)
-print("raw:  ", end='')
-print(h2_raw)
-print("p-ms-ar:  ", end='')
+print(f"BG: {avg_bg:}")
+print(f"raw: {h2_raw}")
+print(f"p-ms-ar:  {pmsar}")
 
-print(pmsar)
+print(f"rs-0: {args.rso}")
 
-print("rs-0: ", end='')
-print(args.rso)
+print(f"Real: {real}")
 
-print("Real: ", end='')
-print(real)
+print(f"I-0: {io}")
 
-print("I-0: ", end='')
-print(io)
+print(f"rs-i: {rsi[0]}")
 
-print("rs-i: ", end='')
-print(rsi[0])
+print(f"P-MS-I: {pmsi}")
 
-print("P-MS-I: ", end='')
-print(pmsi)
+print(f"P-MS-Tot: {pmstot}")
 
-print("P-MS-Tot: ", end='')
-print(pmstot)
+print(f"P-p,i: {ppi}")
 
-print("P-p,i: ", end='')
-print(ppi)
+print(f"P-p,Ar,i: {ppar}")
 
-print("P-p,Ar,i: ", end='')
-print(ppar)
+print(f"Q-p,i/Q-Ar,i: {qpiqar}")
 
-print("Q-p,i/Q-Ar,i: ", end='')
-print(qpiqar)
+print(f"Q-Sweep(Ar): {qsweep} mln/min")
 
-print("Q-Sweep(Ar): ", end='')
-print(qsweep, end='')
-print(" mln/min")
+print(f"Q-permeate: {qpermeate} mln/min")
 
-print("Q-permeate: ", end='')
-print(qpermeate, end='')
-print(" mln/min")
+print(f"P-feed: {pfeed} bar")
 
-print("P-feed: ", end='')
-print(pfeed, end='')
-print(" bar")
+print(f"d-membrane: {dmembrane} cm")
 
-print("d-membrane: ", end='')
-print(args.dmembrane, end='')
-print(" cm")
+print(f"A-membrane: {args.amembrane} cm\u00b2")
 
-print("A-membrane: ", end='')
-print(amembrane, end='')
-print(" cm^2")
+print(f"Permeance in m\u00b3(STP)/(m\u00b2 h bar): {permeancebar}")
 
-print("Permeance in m^3(STP)/(m^2 h bar): ", end='')
-print(permeancebar)
+print(f"Permeance in GPU: {permeancegpu}")
 
-print("Permeance in GPU: ", end='')
-print(permeancegpu)
+print(f"Permeance in 10\u207B\u2077 mol/(m\u00b2 s Pa): {permeancepa}")
 
-print("Permeance in 10^-7 mol/(m^2 s Pa): ", end='')
-print(permeancepa)
+print(f"L-membrane in μm: {lmembrane}")
 
-print("L-membrane in μm: ", end='')
-print(lmembrane)
-
-print("Permeability in Barrer: ", end='')
-print(permeability)
+print(f"Permeability in Barrer: {permeability}")
 
 data = {"BG": avg_bg, "Raw": h2_raw, "p-ms-ar": pmsar, "rs-0": args.rso, "Real": real, "I-O": io,
         "rs-i"
         : str(rsi[0]), "P-MS-I": pmsi, "P-MS-Tot": pmstot, "P-p,i": ppi, "P-p,Ar,i": ppar, "Q-p,i/Q-Ar,i": qpiqar,
         "Q-Sweep(Ar)":
-            qsweep, "Q-permeate": qpermeate, "P-feed": pfeed, "d-membrane": args.dmembrane, "A-membrane": amembrane,
+            qsweep, "Q-permeate": qpermeate, "P-feed": pfeed, "d-membrane": dmembrane, "A-membrane": args.amembrane,
         "Permeance in bar": permeancebar, "Permeance in GPU": permeancegpu, "Permeance in Pa": permeancepa,
         "L-membrane": lmembrane, "Permeability in Barrer": permeability}
+
 if args.fileformat == "json":
     with open("output_in_json.json", "w") as outfile:
         json.dump(data, outfile)
@@ -193,4 +166,3 @@ elif args.fileformat == "csv":
         writer.writeheader()
         writer.writerows([data])
 
-    
