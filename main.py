@@ -37,7 +37,6 @@ def calc_rsi(x):
             + diction[args.gas][1] - x
 
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('filename', type=argparse.FileType('r'))
 parser.add_argument('fileformat')
