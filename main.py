@@ -28,13 +28,12 @@ def calc_rsi(x):
         return 79.21 * math.log10(
             (pfeed * (io / x) / ((io / x) + pmsar)) / (pfeed * pmsar / ((io / x) + pmsar)) * 100) + 233.34 - x
     if args.gas == 'H2':
-        return 355 * math.log10(
-            (pfeed * (io / x) / ((io / x) + pmsar)) / (pfeed * pmsar / ((io / x) + pmsar)) * 100) - 32 - x
+        return 602
     if args.gas == 'N2':
-        return 41.31 * math.log10(
+        return -41.31 * math.log10(
             (pfeed * (io / x) / ((io / x) + pmsar)) / (pfeed * pmsar / ((io / x) + pmsar)) * 100) + 91.58 - x
     if args.gas == 'He':
-        return 58.92 * math.log10(
+        return -58.92 * math.log10(
             (pfeed * (io / x) / ((io / x) + pmsar)) / (pfeed * pmsar / ((io / x) + pmsar)) * 100) + 267.25 - x
     if args.gas == 'CO2':
         return 366.542 * math.exp(0.18068 / (
@@ -90,7 +89,7 @@ h2_prms = max(zip(prms.values(), prms.keys()))[1]
 pmsar = sum_ / c
 real = h2_raw - avg_bg
 io = real * float(args.rso)
-rsi = fsolve(calc_rsi, 1)
+rsi = fsolve(calc_rsi, 1000)
 pmsi = io / rsi[0]
 pmstot = pmsar + pmsi
 ppi = 1.01 * pmsi / pmstot
@@ -193,3 +192,5 @@ elif args.fileformat == "csv":
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows([data])
+
+    
