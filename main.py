@@ -118,7 +118,6 @@ for i in range(1, len(gas_list)):
     gas_cum_vol_mln.append(1 / 60 * sum_gas_cum_vol)
 
 x_axis = [i for i in range(len(gas_list))]
-print(gas_cum_vol_mln)
 slope, intercept, r_value, p_value, std_err = linregress(x_axis[23:], gas_cum_vol_mln[23:])
 diff_coefficient = -intercept / slope
 
