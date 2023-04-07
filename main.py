@@ -3,6 +3,7 @@ import math
 import argparse
 from scipy.optimize import fsolve
 from scipy.stats import linregress
+import numpy as np
 import json
 import csv
 
@@ -87,7 +88,7 @@ h2_prms = max(zip(prms.values(), prms.keys()))[1]
 pmsar = sum_ / c
 real = h2_raw - avg_bg
 io = real * float(args.rso)
-rsi = [194.3] if args.gas == 'H2'else fsolve(calc_rsi, 1000)
+rsi = [194.3] if args.gas == 'H2' else fsolve(calc_rsi, 1000)
 pmsi = io / rsi[0]
 pmstot = pmsar + pmsi
 ppi = 1.01 * pmsi / pmstot
@@ -117,8 +118,9 @@ for i in range(1, len(gas_list)):
     gas_cum_vol_mln.append(1 / 60 * sum_gas_cum_vol)
 
 x_axis = [i for i in range(len(gas_list))]
-slope, intercept, r_value, p_value, std_err = linregress(x_axis, gas_cum_vol_mln)
-diff_coefficient = -intercept/slope
+print(gas_cum_vol_mln)
+slope, intercept, r_value, p_value, std_err = linregress(x_axis[23:], gas_cum_vol_mln[23:])
+diff_coefficient = -intercept / slope
 
 print(f"BG: {avg_bg:}")
 print(f"raw: {h2_raw}")
