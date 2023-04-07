@@ -122,7 +122,9 @@ slope, intercept, r_value, p_value, std_err = linregress(x_axis[23:], gas_cum_vo
 diff_coefficient = -intercept / slope
 
 print(f"BG: {avg_bg:}")
+
 print(f"raw: {h2_raw}")
+
 print(f"p-ms-ar:  {pmsar}")
 
 print(f"rs-0: {args.rso}")
