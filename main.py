@@ -88,7 +88,7 @@ h2_prms = max(zip(prms.values(), prms.keys()))[1]
 pmsar = sum_ / c
 real = h2_raw - avg_bg
 io = real * float(args.rso)
-rsi = [194.3] if args.gas == 'H2' else fsolve(calc_rsi, 1000)
+rsi = [1171] if args.gas == 'H2' else fsolve(calc_rsi, 1000)
 pmsi = io / rsi[0]
 pmstot = pmsar + pmsi
 ppi = 1.01 * pmsi / pmstot
