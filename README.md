@@ -13,7 +13,7 @@ Use any Python IDE or terminal.
 
 Use this command to run the program:
 
-python main.py Location json/csv --rso1=rs-0 --amembrane1=amembrane --gas1=H2/CH4/He/CO2/NO2
+python main.py --filename1="filelocation" json/csv --rso1=rs-0 --amembrane1=amembrane --gas1=H2/CH4/He/CO2/NO2
 
 You can input maximum 5 files at the same time.
 For Example: ```python main.py --filename1="D:\Diffusivity calculation\Raw data\H2 raw data.xlsx" --filename2="D:\Diffusivity calculation\Raw data\CO2 raw data.xlsx" csv --rso1=126.9 --rso2=1 --amembrane1=5.73 --amembrane2=5.73 --gas1=H2 --gas2=CO2```
