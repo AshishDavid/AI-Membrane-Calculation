@@ -13,8 +13,8 @@ Use any Python IDE or terminal.
 
 Use this command to run the program:
 
-python main.py Location json/csv --rso=rs-0 --amembrane=amembrane --gas=H2/CH4/He/CO2/NO2
+python main.py Location json/csv --rso1=rs-0 --amembrane1=amembrane --gas1=H2/CH4/He/CO2/NO2
 
-For Example: "python main.py "D:\raw data files\He raw data.xlsx" json --rso=1 --amembrane=5.73 --gas=He"
+For Example: ```python main.py --filename1="D:\Diffusivity calculation\Raw data\H2 raw data.xlsx" --filename2="D:\Diffusivity calculation\Raw data\CO2 raw data.xlsx" csv --rso1=126.9 --rso2=1 --amembrane1=5.73 --amembrane2=5.73 --gas1=H2 --gas2=CO2```
 
 And you will see the result on the screen and also the output will be stored in output_in_json.json file or output_in_csv.csv in the same directory as the program.
