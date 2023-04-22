@@ -212,15 +212,15 @@ def save_result(component, fileformat):
 
 @hydra.main(version_base=None, config_path="conf", config_name="config")
 def my_app(cfg: DictConfig) -> None:
-    computation(cfg['filename1'], cfg['rso1'], cfg['amembrane1'], cfg['gas1'], cfg['fileformat'])
-    if cfg['filename2'] is not None:
-        computation(cfg['filename1'], cfg['rso1'], cfg['amembrane1'], cfg['gas1'], cfg['fileformat'])
-    if cfg['filename3'] is not None:
-        computation(cfg['filename1'], cfg['rso1'], cfg['amembrane1'], cfg['gas1'], cfg['fileformat'])
-    if cfg['filename4'] is not None:
-        computation(cfg['filename1'], cfg['rso1'], cfg['amembrane1'], cfg['gas1'], cfg['fileformat'])
-    if cfg['filename5'] is not None:
-        computation(cfg['filename1'], cfg['rso1'], cfg['amembrane1'], cfg['gas1'], cfg['fileformat'])
+    computation(cfg['config1']['filename'], cfg['config1']['rso'], cfg['config1']['amembrane'], cfg['config1']['gas'], cfg['fileformat'])
+    if cfg['config2']['filename'] is not None:
+        computation(cfg['config2']['filename'], cfg['config2']['rso'], cfg['config2']['amembrane'], cfg['config2']['gas'], cfg['fileformat'])
+    if cfg['config3']['filename'] is not None:
+        computation(cfg['config3']['filename'], cfg['config3']['rso'], cfg['config3']['amembrane'], cfg['config3']['gas'], cfg['fileformat'])
+    if cfg['config4']['filename'] is not None:
+        computation(cfg['config4']['filename'], cfg['config4']['rso'], cfg['config4']['amembrane'], cfg['config4']['gas'], cfg['fileformat'])
+    if cfg['config5']['filename'] is not None:
+        computation(cfg['config5']['filename'], cfg['config5']['rso'], cfg['config5']['amembrane'], cfg['config5']['gas'], cfg['fileformat'])
 
 
 if __name__ == "__main__":
