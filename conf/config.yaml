@@ -1,20 +1,26 @@
-filename1: D:\Diffusivity calculation\Raw data\H2 raw data.xlsx
-rso1: 126.9
-amembrane1: 5.73
-gas1: H2
-filename2:
-rso2:
-amembrane2:
-gas2:
-filename3:
-rso3:
-amembrane3:
-gas3:
-filename4:
-rso4:
-amembrane4:
-gas4:
-filename5:
-amembrane5:
-gas5:
+config1:
+  filename: D:\Diffusivity calculation\Raw data\H2 raw data.xlsx
+  rso: 126.9
+  amembrane: 5.73
+  gas: H2
+config2:
+  filename:
+  rso:
+  amembrane:
+  gas:
+config3:
+  filename:
+  rso:
+  amembrane:
+  gas:
+config4:
+  filename:
+  rso:
+  amembrane:
+  gas:
+config5:
+  filename:
+  rso:
+  amembrane:
+  gas:
 fileformat: json
