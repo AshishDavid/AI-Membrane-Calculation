@@ -3,25 +3,30 @@ config1:
   rso: 126.9
   amembrane: 5.73
   gas: H2
+  outputfile: output_H2
 config2:
   filename:
   rso:
   amembrane:
   gas:
+  outputfile:
 config3:
   filename:
   rso:
   amembrane:
   gas:
+  outputfile:
 config4:
   filename:
   rso:
   amembrane:
   gas:
+  outputfile:
 config5:
   filename:
   rso:
   amembrane:
   gas:
-fileformat: csv
-outputfile: output
+  outputfile:
+fileformat: json
+
