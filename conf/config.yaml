@@ -1,21 +1,20 @@
 filename1: D:\Diffusivity calculation\Raw data\H2 raw data.xlsx
-filename2:
-filename3:
-filename4:
-filename5:
 rso1: 126.9
-rso2:
-rso3:
-rso4:
-rso5:
 amembrane1: 5.73
-amembrane2:
-amembrane3:
-amembrane4:
-amembrane5:
 gas1: H2
+filename2:
+rso2:
+amembrane2:
 gas2:
+filename3:
+rso3:
+amembrane3:
 gas3:
+filename4:
+rso4:
+amembrane4:
 gas4:
+filename5:
+amembrane5:
 gas5:
 fileformat: json
