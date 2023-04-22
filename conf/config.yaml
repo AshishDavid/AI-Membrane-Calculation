@@ -29,4 +29,7 @@ config5:
   gas:
   outputfile:
 fileformat: json
-
+pfeed: 1.01
+qsweep: 50
+lmembrane: 0.1
+dmembrane: 2.7
