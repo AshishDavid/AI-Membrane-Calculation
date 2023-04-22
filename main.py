@@ -8,6 +8,8 @@ from dataclasses import dataclass
 import numpy as np
 import json
 import csv
+import hydra
+from omegaconf import DictConfig, OmegaConf
 
 # defining constants
 pfeed = 1.01
@@ -92,7 +94,7 @@ def calc_rsi(x, *data):
     else:
         return diction[gas][0] * math.log10(
             (pfeed * (io / x) / ((io / x) + pmsar)) / (pfeed * pmsar / ((io / x) + pmsar)) * 100) \
-            + diction[args.gas][1] - x
+            + diction[gas][1] - x
 
 
 def calc_switch_row(sheet):
@@ -101,21 +103,17 @@ def calc_switch_row(sheet):
             return i
 
 
-def computation(filename_f, rso_f, amembrane_f, gas_f):
-    args.filename = filename_f
-    args.rso = rso_f
-    args.gas = gas_f
-    args.amembrane = amembrane_f
-    workbook = load_workbook(filename=args.filename.name)
+def computation(filename_f, rso_f, amembrane_f, gas_f, fileformat_f):
+    workbook = load_workbook(filename=filename_f)
     sheet = workbook.active
 
-    if args.gas == 'H2':
+    if gas_f == 'H2':
         gas_column = 'D'
-    if args.gas == 'He':
+    if gas_f == 'He':
         gas_column = 'C'
-    if args.gas == 'CH4' or args.gas == 'N2':
+    if gas_f == 'CH4' or gas_f == 'N2':
         gas_column = 'E'
-    if args.gas == 'CO2':
+    if gas_f == 'CO2':
         gas_column = 'F'
 
     avg_bg = calc_avg_bg(sheet, gas_column)
@@ -143,9 +141,9 @@ def computation(filename_f, rso_f, amembrane_f, gas_f):
     h2_prms = max(zip(prms.values(), prms.keys()))[1]
     pmsar = sum_ / c
     real = h2_raw - avg_bg
-    io = real * float(args.rso)
+    io = real * float(rso_f)
     data = (io, pmsar, gas_f)
-    rsi = [1171] if args.gas == 'H2' else fsolve(calc_rsi, 1000, args=data)
+    rsi = [1171] if gas_f == 'H2' else fsolve(calc_rsi, 1000, args=data)
     pmsi = io / rsi[0]
     pmstot = pmsar + pmsi
     ppi = 1.01 * pmsi / pmstot
@@ -157,7 +155,7 @@ def computation(filename_f, rso_f, amembrane_f, gas_f):
     permeancepa = permeancegpu * 3.35 / 1000
     permeability = permeancegpu * lmembrane
     gas_list = [sheet[gas_column + str(i)].value for i in range(switch_row, sheet.max_row + 1)]
-    processed_signal = [((gas_list[i] - avg_bg) * float(args.rso)) / rsi[0] for i in range(len(gas_list))]
+    processed_signal = [((gas_list[i] - avg_bg) * float(rso_f)) / rsi[0] for i in range(len(gas_list))]
     argon_list = [sheet["G" + str(i)].value for i in range(switch_row - 1, sheet.max_row + 1)]
     sum_argon_processed = [processed_signal[i] + argon_list[i] for i in range(len(processed_signal))]
     gas_in_bar = [1.01 * processed_signal[i] / sum_argon_processed[i] for i in range(len(processed_signal))]
@@ -178,14 +176,14 @@ def computation(filename_f, rso_f, amembrane_f, gas_f):
     slope, intercept, r_value, p_value, std_err = linregress(x_axis[23:], gas_cum_vol_mln[23:])
     diff_coefficient = -intercept / slope
 
-    component = Components(args.gas, avg_bg, h2_raw, pmsar, float(args.rso), real, io, rsi[0], pmsi, pmstot, ppi, ppar,
+    component = Components(gas_f, avg_bg, h2_raw, pmsar, float(rso_f), real, io, rsi[0], pmsi, pmstot, ppi, ppar,
                            qpiqar, qsweep, qpermeate, pfeed, dmembrane, float(amembrane_f), permeancebar,
                            permeancegpu, permeancepa, lmembrane, permeability, diff_coefficient)
     print_result(component)
-    save_result(component)
+    save_result(component, fileformat_f)
 
 
-def save_result(component):
+def save_result(component, fileformat):
     data = {"Gas": component.gas, "BG": component.bg, "Raw": component.raw, "p-ms-ar": component.p_ms_ar,
             "rs-0": component.rs_0, "Real": component.real, "I-O": component.i_0,
             "rs-i": str(component.rs_i), "P-MS-I": component.p_ms_i, "P-MS-Tot": component.p_ms_tot,
@@ -197,10 +195,10 @@ def save_result(component):
             "Permeability in Barrer": component.permeance_in_barrer,
             "Diffusion coefficient": component.diffusion_coefficient}
 
-    if args.fileformat == "json":
+    if fileformat == "json":
         with open("output_in_json.json", "a") as outfile:
             json.dump(data, outfile)
-    elif args.fileformat == "csv":
+    elif fileformat == "csv":
         fieldnames = ['Gas', 'BG', 'Raw', 'p-ms-ar', 'rs-0', 'Real', 'I-0', 'rs-i', 'P-MS-I', 'P-MS-Tot', 'P-p,i',
                       'P-p,Ar,i',
                       'Q-p,i/Q-Ar,i',
@@ -213,40 +211,18 @@ def save_result(component):
             writer.writerows([data])
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--filename', type=argparse.FileType('r'), help='Location of File')
-parser.add_argument('--filename1', type=argparse.FileType('r'), help='Location of 1st File')
-parser.add_argument('--filename2', type=argparse.FileType('r'), help='Location of 2nd File')
-parser.add_argument('--filename3', type=argparse.FileType('r'), help='Location of 3rd File')
-parser.add_argument('--filename4', type=argparse.FileType('r'), help='Location of 4th File')
-parser.add_argument('--filename5', type=argparse.FileType('r'), help='Location of 5th File')
-parser.add_argument('fileformat')
-parser.add_argument('--rso', help='Value of RS-0')
-parser.add_argument('--rso1', help='Value of 1st RS-0')
-parser.add_argument('--rso2', help='Value of 2nd RS-0')
-parser.add_argument('--rso3', help='Value of 3rd RS-0')
-parser.add_argument('--rso4', help='Value of 4th RS-0')
-parser.add_argument('--rso5', help='Value of 5th RS-0')
-parser.add_argument('--amembrane', help='Value of amembrane')
-parser.add_argument('--amembrane1', help='Value of 1st amembrane')
-parser.add_argument('--amembrane2', help='Value of 2nd amembrane')
-parser.add_argument('--amembrane3', help='Value of 3rd amembrane')
-parser.add_argument('--amembrane4', help='Value of 4th amembrane')
-parser.add_argument('--amembrane5', help='Value of 5th amembrane')
-parser.add_argument('--gas', help='Which gas is used')
-parser.add_argument('--gas1', help='Which gas is used for 1st')
-parser.add_argument('--gas2', help='Which gas is used for 2nd')
-parser.add_argument('--gas3', help='Which gas is used for 3rd')
-parser.add_argument('--gas4', help='Which gas is used for 4th')
-parser.add_argument('--gas5', help='Which gas is used for 5th')
-args = parser.parse_args()
+@hydra.main(version_base=None, config_path="conf", config_name="config")
+def my_app(cfg: DictConfig) -> None:
+    computation(cfg['filename1'], cfg['rso1'], cfg['amembrane1'], cfg['gas1'], cfg['fileformat'])
+    if cfg['filename2'] is not None:
+        computation(cfg['filename1'], cfg['rso1'], cfg['amembrane1'], cfg['gas1'], cfg['fileformat'])
+    if cfg['filename3'] is not None:
+        computation(cfg['filename1'], cfg['rso1'], cfg['amembrane1'], cfg['gas1'], cfg['fileformat'])
+    if cfg['filename4'] is not None:
+        computation(cfg['filename1'], cfg['rso1'], cfg['amembrane1'], cfg['gas1'], cfg['fileformat'])
+    if cfg['filename5'] is not None:
+        computation(cfg['filename1'], cfg['rso1'], cfg['amembrane1'], cfg['gas1'], cfg['fileformat'])
 
-computation(args.filename1, args.rso1, args.amembrane1, args.gas1)
-if args.filename2 is not None:
-    computation(args.filename2, args.rso2, args.amembrane2, args.gas2)
-if args.filename3 is not None:
-    computation(args.filename3, args.rso3, args.amembrane3, args.gas3)
-if args.filename4 is not None:
-    computation(args.filename4, args.rso4, args.amembrane4, args.gas4)
-if args.filename5 is not None:
-    computation(args.filename5, args.rso5, args.amembrane5, args.gas5)
+
+if __name__ == "__main__":
+    my_app()
