@@ -8,7 +8,7 @@ import numpy as np
 import json
 import csv
 import hydra
-from omegaconf import DictConfig
+from omegaconf import DictConfig, omegaconf
 
 
 @dataclass
@@ -206,25 +206,11 @@ def save_result(component, fileformat, output_file):
 
 @hydra.main(version_base=None, config_path="conf", config_name="config")
 def my_app(cfg: DictConfig) -> None:
-    computation(cfg['config1']['filename'], cfg['config1']['rso'], cfg['config1']['amembrane'], cfg['config1']['gas'],
-                cfg['fileformat'], cfg['config1']['outputfile'], cfg['pfeed'], cfg['qsweep'], cfg['lmembrane'],
-                cfg['dmembrane'])
-    if cfg['config2']['filename'] is not None:
-        computation(cfg['config2']['filename'], cfg['config2']['rso'], cfg['config2']['amembrane'],
-                    cfg['config2']['gas'], cfg['fileformat'], cfg['config2']['outputfile'], cfg['pfeed'], cfg['qsweep'],
-                    cfg['lmembrane'], cfg['dmembrane'])
-    if cfg['config3']['filename'] is not None:
-        computation(cfg['config3']['filename'], cfg['config3']['rso'], cfg['config3']['amembrane'],
-                    cfg['config3']['gas'], cfg['fileformat'], cfg['config3']['outputfile'], cfg['pfeed'], cfg['qsweep'],
-                    cfg['lmembrane'], cfg['dmembrane'])
-    if cfg['config4']['filename'] is not None:
-        computation(cfg['config4']['filename'], cfg['config4']['rso'], cfg['config4']['amembrane'],
-                    cfg['config4']['gas'], cfg['fileformat'], cfg['config4']['outputfile'], cfg['pfeed'], cfg['qsweep'],
-                    cfg['lmembrane'], cfg['dmembrane'])
-    if cfg['config5']['filename'] is not None:
-        computation(cfg['config5']['filename'], cfg['config5']['rso'], cfg['config5']['amembrane'],
-                    cfg['config5']['gas'], cfg['fileformat'], cfg['config5']['outputfile'], cfg['pfeed'], cfg['qsweep'],
-                    cfg['lmembrane'], cfg['dmembrane'])
+    for i in cfg:
+        if type(cfg[i]) is omegaconf.DictConfig:
+            if cfg[i]['filename'] is not None:
+                computation(cfg[i]['filename'], cfg[i]['rso'], cfg[i]['amembrane'], cfg[i]['gas'], cfg['fileformat'],
+                            cfg[i]['outputfile'], cfg['pfeed'], cfg['qsweep'], cfg['lmembrane'], cfg['dmembrane'])
 
 
 if __name__ == "__main__":
