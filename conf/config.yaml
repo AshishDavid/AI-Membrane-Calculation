@@ -23,4 +23,5 @@ config5:
   rso:
   amembrane:
   gas:
-fileformat: json
+fileformat: csv
+outputfile: output
