@@ -1,7 +1,6 @@
 import numpy
 from openpyxl import load_workbook
 import math
-import argparse
 from scipy.optimize import fsolve
 from scipy.stats import linregress
 from dataclasses import dataclass
@@ -9,7 +8,7 @@ import numpy as np
 import json
 import csv
 import hydra
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
 
 # defining constants
 pfeed = 1.01
