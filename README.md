@@ -12,6 +12,6 @@ Install the dependencies. Use the command "pip install -r requirements.txt" on t
 Run the program using any python IDE or use "python main.py"
  to run program. 
  Use conf/config.yaml to enter the information of filenames, locations, etc.
-You can calculate any number of files now by configuring config.yaml files.
+You can calculate any number of files now by configuring config.yaml files. An example is given in the config.yaml file.
 
 And you will see the result on the screen and also the output will be stored in output_in_json.json file or output_in_csv.csv in the same directory as the program.
