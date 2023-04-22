@@ -9,13 +9,9 @@ When borrowing any materials from this repository, you must leave a link to it, 
 # How to run the program
 Install the dependencies. Use the command "pip install -r requirements.txt" on terminal to install it.
 
-Use any Python IDE or terminal.
-
-Use this command to run the program:
-
-python main.py --filename1="filelocation" json/csv --rso1=rs-0 --amembrane1=amembrane --gas1=H2/CH4/He/CO2/NO2
-
-You can input maximum 5 files at the same time.
-For Example: ```python main.py --filename1="D:\Diffusivity calculation\Raw data\H2 raw data.xlsx" --filename2="D:\Diffusivity calculation\Raw data\CO2 raw data.xlsx" csv --rso1=126.9 --rso2=1 --amembrane1=5.73 --amembrane2=5.73 --gas1=H2 --gas2=CO2```
+Run the program using any python IDE or use "python main.py"
+ to run program. 
+ Use conf/config.yaml to enter the information of filenames, locations, etc.
+You can calculate any number of files now by configuring config.yaml files.
 
 And you will see the result on the screen and also the output will be stored in output_in_json.json file or output_in_csv.csv in the same directory as the program.
