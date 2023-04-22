@@ -10,12 +10,6 @@ import csv
 import hydra
 from omegaconf import DictConfig
 
-# defining constants
-pfeed = 1.01
-qsweep = 50
-lmembrane = 0.1
-dmembrane = 2.7
-
 
 @dataclass
 class Components:
@@ -85,7 +79,7 @@ def print_result(components):
 
 
 def calc_rsi(x, *data):
-    io, pmsar, gas = data
+    io, pmsar, gas, pfeed = data
     diction = {'CH4': [79.21, 233.34], 'N2': [-41.31, 91.58], 'He': [-58.92, 267.25]}
     if gas == 'CO2':
         return 366.542 * math.exp(0.18068 / (
@@ -102,7 +96,7 @@ def calc_switch_row(sheet):
             return i
 
 
-def computation(filename_f, rso_f, amembrane_f, gas_f, fileformat_f, output_f):
+def computation(filename_f, rso_f, amembrane_f, gas_f, fileformat_f, output_f, pfeed, qsweep, lmembrane, dmembrane):
     workbook = load_workbook(filename=filename_f)
     sheet = workbook.active
 
@@ -141,7 +135,7 @@ def computation(filename_f, rso_f, amembrane_f, gas_f, fileformat_f, output_f):
     pmsar = sum_ / c
     real = h2_raw - avg_bg
     io = real * float(rso_f)
-    data = (io, pmsar, gas_f)
+    data = (io, pmsar, gas_f, pfeed)
     rsi = [1171] if gas_f == 'H2' else fsolve(calc_rsi, 1000, args=data)
     pmsi = io / rsi[0]
     pmstot = pmsar + pmsi
@@ -195,7 +189,7 @@ def save_result(component, fileformat, output_file):
             "Diffusion coefficient": component.diffusion_coefficient}
 
     if fileformat == "json":
-        with open(output_file+'.'+fileformat, "a") as outfile:
+        with open(output_file + '.' + fileformat, "a") as outfile:
             json.dump(data, outfile)
     elif fileformat == "csv":
         fieldnames = ['Gas', 'BG', 'Raw', 'p-ms-ar', 'rs-0', 'Real', 'I-0', 'rs-i', 'P-MS-I', 'P-MS-Tot', 'P-p,i',
@@ -204,7 +198,7 @@ def save_result(component, fileformat, output_file):
                       'Q-Sweep(Ar)', 'Q-permeate', 'P-feed', 'd-membrane', 'A-membrane', 'Permeance in bar',
                       'Permeance in GPU',
                       'Permeance in Pa', 'Permeability in Barrer', 'L-membrane', 'I-O', 'Diffusion coefficient']
-        with open(output_file+'.'+fileformat, 'a') as csvfile:
+        with open(output_file + '.' + fileformat, 'a') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows([data])
@@ -213,19 +207,24 @@ def save_result(component, fileformat, output_file):
 @hydra.main(version_base=None, config_path="conf", config_name="config")
 def my_app(cfg: DictConfig) -> None:
     computation(cfg['config1']['filename'], cfg['config1']['rso'], cfg['config1']['amembrane'], cfg['config1']['gas'],
-                cfg['fileformat'], cfg['config1']['outputfile'])
+                cfg['fileformat'], cfg['config1']['outputfile'], cfg['pfeed'], cfg['qsweep'], cfg['lmembrane'],
+                cfg['dmembrane'])
     if cfg['config2']['filename'] is not None:
         computation(cfg['config2']['filename'], cfg['config2']['rso'], cfg['config2']['amembrane'],
-                    cfg['config2']['gas'], cfg['fileformat'], cfg['config2']['outputfile'])
+                    cfg['config2']['gas'], cfg['fileformat'], cfg['config2']['outputfile'], cfg['pfeed'], cfg['qsweep'],
+                    cfg['lmembrane'], cfg['dmembrane'])
     if cfg['config3']['filename'] is not None:
         computation(cfg['config3']['filename'], cfg['config3']['rso'], cfg['config3']['amembrane'],
-                    cfg['config3']['gas'], cfg['fileformat'], cfg['config3']['outputfile'])
+                    cfg['config3']['gas'], cfg['fileformat'], cfg['config3']['outputfile'], cfg['pfeed'], cfg['qsweep'],
+                    cfg['lmembrane'], cfg['dmembrane'])
     if cfg['config4']['filename'] is not None:
         computation(cfg['config4']['filename'], cfg['config4']['rso'], cfg['config4']['amembrane'],
-                    cfg['config4']['gas'], cfg['fileformat'], cfg['config4']['outputfile'])
+                    cfg['config4']['gas'], cfg['fileformat'], cfg['config4']['outputfile'], cfg['pfeed'], cfg['qsweep'],
+                    cfg['lmembrane'], cfg['dmembrane'])
     if cfg['config5']['filename'] is not None:
         computation(cfg['config5']['filename'], cfg['config5']['rso'], cfg['config5']['amembrane'],
-                    cfg['config5']['gas'], cfg['fileformat'], cfg['config5']['outputfile'])
+                    cfg['config5']['gas'], cfg['fileformat'], cfg['config5']['outputfile'], cfg['pfeed'], cfg['qsweep'],
+                    cfg['lmembrane'], cfg['dmembrane'])
 
 
 if __name__ == "__main__":
