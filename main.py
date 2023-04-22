@@ -102,7 +102,7 @@ def calc_switch_row(sheet):
             return i
 
 
-def computation(filename_f, rso_f, amembrane_f, gas_f, fileformat_f):
+def computation(filename_f, rso_f, amembrane_f, gas_f, fileformat_f, output_f):
     workbook = load_workbook(filename=filename_f)
     sheet = workbook.active
 
@@ -179,10 +179,10 @@ def computation(filename_f, rso_f, amembrane_f, gas_f, fileformat_f):
                            qpiqar, qsweep, qpermeate, pfeed, dmembrane, float(amembrane_f), permeancebar,
                            permeancegpu, permeancepa, lmembrane, permeability, diff_coefficient)
     print_result(component)
-    save_result(component, fileformat_f)
+    save_result(component, fileformat_f, output_f)
 
 
-def save_result(component, fileformat):
+def save_result(component, fileformat, output_file):
     data = {"Gas": component.gas, "BG": component.bg, "Raw": component.raw, "p-ms-ar": component.p_ms_ar,
             "rs-0": component.rs_0, "Real": component.real, "I-O": component.i_0,
             "rs-i": str(component.rs_i), "P-MS-I": component.p_ms_i, "P-MS-Tot": component.p_ms_tot,
@@ -195,7 +195,7 @@ def save_result(component, fileformat):
             "Diffusion coefficient": component.diffusion_coefficient}
 
     if fileformat == "json":
-        with open("output_in_json.json", "a") as outfile:
+        with open(output_file+'.'+fileformat, "a") as outfile:
             json.dump(data, outfile)
     elif fileformat == "csv":
         fieldnames = ['Gas', 'BG', 'Raw', 'p-ms-ar', 'rs-0', 'Real', 'I-0', 'rs-i', 'P-MS-I', 'P-MS-Tot', 'P-p,i',
@@ -204,7 +204,7 @@ def save_result(component, fileformat):
                       'Q-Sweep(Ar)', 'Q-permeate', 'P-feed', 'd-membrane', 'A-membrane', 'Permeance in bar',
                       'Permeance in GPU',
                       'Permeance in Pa', 'Permeability in Barrer', 'L-membrane', 'I-O', 'Diffusion coefficient']
-        with open("output_in_csv.csv", 'a') as csvfile:
+        with open(output_file+'.'+fileformat, 'a') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows([data])
@@ -212,15 +212,20 @@ def save_result(component, fileformat):
 
 @hydra.main(version_base=None, config_path="conf", config_name="config")
 def my_app(cfg: DictConfig) -> None:
-    computation(cfg['config1']['filename'], cfg['config1']['rso'], cfg['config1']['amembrane'], cfg['config1']['gas'], cfg['fileformat'])
+    computation(cfg['config1']['filename'], cfg['config1']['rso'], cfg['config1']['amembrane'], cfg['config1']['gas'],
+                cfg['fileformat'], cfg['outputfile'])
     if cfg['config2']['filename'] is not None:
-        computation(cfg['config2']['filename'], cfg['config2']['rso'], cfg['config2']['amembrane'], cfg['config2']['gas'], cfg['fileformat'])
+        computation(cfg['config2']['filename'], cfg['config2']['rso'], cfg['config2']['amembrane'],
+                    cfg['config2']['gas'], cfg['fileformat'], cfg['outputfile'])
     if cfg['config3']['filename'] is not None:
-        computation(cfg['config3']['filename'], cfg['config3']['rso'], cfg['config3']['amembrane'], cfg['config3']['gas'], cfg['fileformat'])
+        computation(cfg['config3']['filename'], cfg['config3']['rso'], cfg['config3']['amembrane'],
+                    cfg['config3']['gas'], cfg['fileformat'], cfg['outputfile'])
     if cfg['config4']['filename'] is not None:
-        computation(cfg['config4']['filename'], cfg['config4']['rso'], cfg['config4']['amembrane'], cfg['config4']['gas'], cfg['fileformat'])
+        computation(cfg['config4']['filename'], cfg['config4']['rso'], cfg['config4']['amembrane'],
+                    cfg['config4']['gas'], cfg['fileformat'], cfg['outputfile'])
     if cfg['config5']['filename'] is not None:
-        computation(cfg['config5']['filename'], cfg['config5']['rso'], cfg['config5']['amembrane'], cfg['config5']['gas'], cfg['fileformat'])
+        computation(cfg['config5']['filename'], cfg['config5']['rso'], cfg['config5']['amembrane'],
+                    cfg['config5']['gas'], cfg['fileformat'], cfg['outputfile'])
 
 
 if __name__ == "__main__":
